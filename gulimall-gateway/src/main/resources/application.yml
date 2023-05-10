@@ -1,0 +1,24 @@
+spring:
+  cloud:
+
+#    sentinel:
+#      transport:
+#        #配置sentinel dashboard地址
+#        dashboard: localhost:8080
+
+    gateway:
+      routes:
+        - id: test_route
+          uri: https://www.baidu.com
+          predicates:
+            - Query=uri,baidu
+
+        - id: qq_route
+          uri: https://www.qq.com
+          predicates:
+            - Query=uri,qq
+
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/**
