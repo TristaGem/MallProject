@@ -22,13 +22,13 @@ public class OssController {
     @Autowired
     OSS ossClient;
 
-    @Value("${spring.cloud.alicloud.oss.endpoint")
+    @Value("${spring.cloud.alicloud.oss.endpoint}")
     private String endpoint;
 
-    @Value("${spring.cloud.alicloud.oss.bucket")
+    @Value("${spring.cloud.alicloud.oss.bucket}")
     private String bucket;
 
-    @Value("${spring.cloud.alicloud.access-key")
+    @Value("${spring.cloud.alicloud.access-key}")
     private String accessId;
 
 
@@ -64,20 +64,6 @@ public class OssController {
             respMap.put("dir", dir);
             respMap.put("host", host);
             respMap.put("expire", String.valueOf(expireEndTime / 1000));
-
-//            JSONObject jasonCallback = new JSONObject();
-//            jasonCallback.put("callbackUrl", callbackUrl);
-//            jasonCallback.put("callbackBody",
-//                    "filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}");
-//            jasonCallback.put("callbackBodyType", "application/x-www-form-urlencoded");
-//            String base64CallbackBody = BinaryUtil.toBase64String(jasonCallback.toString().getBytes());
-//            respMap.put("callback", base64CallbackBody);
-
-//            JSONObject ja1 = JSONObject.fromObject(respMap);
-//            // System.out.println(ja1.toString());
-//            response.setHeader("Access-Control-Allow-Origin", "*");
-//            response.setHeader("Access-Control-Allow-Methods", "GET, POST");
-//            response(request, response, ja1.toString());
 
         } catch (Exception e) {
             // Assert.fail(e.getMessage());
