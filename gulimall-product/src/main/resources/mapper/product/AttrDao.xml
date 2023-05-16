@@ -16,6 +16,11 @@
         <result property="catelogId" column="catelog_id"/>
         <result property="showDesc" column="show_desc"/>
     </resultMap>
+
+<!--    The provided SQL query selectSearchAttrIds retrieves attribute IDs (attr_id) from the-->
+<!--    pms_attr table. It uses the <foreach> tag to generate a comma-separated list of-->
+<!--    attribute IDs from the attrIds collection. The resulting query looks for attribute IDs-->
+<!--    in the attrIds list and with a search type of 1 (search_type = 1).-->
     <select id="selectSearchAttrIds" resultType="java.lang.Long">
 
         SELECT attr_id FROM pms_attr WHERE attr_id IN

@@ -1,33 +1,20 @@
 package com.example.gulimall.product.service.impl;
 
-import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.common.constant.ProductConstant;
-import com.example.common.to.SkuHasStockVo;
-import com.example.common.to.SkuReductionTo;
-import com.example.common.to.SpuBoundTo;
+import com.example.common.to.es.SkuEsModel;
 import com.example.common.utils.PageUtils;
 import com.example.common.utils.Query;
-import com.example.common.utils.R;
 import com.example.gulimall.product.dao.SpuInfoDao;
 import com.example.gulimall.product.entity.*;
-import com.example.gulimall.product.feign.CouponFeignService;
-import com.example.gulimall.product.feign.SearchFeignService;
-import com.example.gulimall.product.feign.WareFeignService;
 import com.example.gulimall.product.service.*;
-import com.example.gulimall.product.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -228,6 +215,94 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         IPage<SpuInfoEntity> page = this.page(new Query<SpuInfoEntity>().getPage(params), queryWrapper);
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void up(Long spuId) {
+
+        List<SkuEsModel> upProducts = new ArrayList<>();
+
+        // find all the attributes that are searchable
+        List<ProductAttrValueEntity> productAttrValueEntities  = productAttrValueService.baseAttrListforspu(spuId);
+        List<Long> attrIds = productAttrValueEntities.stream().map(product -> {
+            return product.getAttrId();
+        }).collect(Collectors.toList());
+
+
+        /*
+         Solution 1: perform in memory stream filtering, when the size of `attrIds` is small, the impact from overhead
+         iterating and filteirng the list is negligible;
+         however, as the size of `attrIds` grows larger, Solution 1 may experience performance issues.
+         Each ID in attrIds requires a database call (attrService.getById(id)) to fetch the corresponding
+         attribute object, which can become a bottleneck. If the database calls are slow or if there are
+         a significant number of IDs, the overall performance may degrade due to the increased number of round trips to the database.
+
+         List<Long> searchableBaseAttrId = attrIds.stream()
+        .filter(id -> attrService.getById(id).getSearchType() == 1)
+        .collect(Collectors.toList());
+         */
+
+        /*
+         Solution 2
+        In this solution, the code directly calls the attrService.selectSearchAttrs(attrIds) method, passing the
+         attrIds list as a parameter. This method likely executes a database query with the provided
+         attribute IDs and returns a list of search attribute IDs (searchAttrIds).
+
+        Solution 2 is generally more efficient when:
+
+        attrIds is large: If attrIds contains a significant number of elements, Solution 2
+        can benefit from the database's ability to process large datasets efficiently.
+
+        Database performance is good: If the database is well-optimized and can handle the
+        query efficiently, Solution 2 can be faster since it avoids multiple round trips to
+        the database for individual attribute lookups.
+        Network latency is high: If there is high network latency between the application
+        server and the database server, Solution 2 can outperform Solution 1 because it
+        reduces the number of database calls.
+
+         */
+        List<Long> searchAttrIds = attrService.selectSearchAttrs(attrIds);
+        //转换为Set集合
+        Set<Long> idSet = searchAttrIds.stream().collect(Collectors.toSet());
+
+        List<SkuEsModel.Attrs> attrsList = attrIds.stream().filter(id -> {
+            return idSet.contains(id);
+        }).map(item -> {
+            SkuEsModel.Attrs attrs = new SkuEsModel.Attrs();
+            BeanUtils.copyProperties(item, attrs);
+            return attrs;
+        }).collect(Collectors.toList());
+
+        //1、查出当前spuId对应的所有sku信息,品牌的名字
+        List<SkuInfoEntity> skuInfoEntities = skuInfoService.getSkusBySpuId(spuId);
+
+        skuInfoEntities.stream().map( sku -> {
+            SkuEsModel esModel = new SkuEsModel();
+            BeanUtils.copyProperties(sku, esModel);
+
+            // skuPrice, skuImg,
+            esModel.setSkuPrice(sku.getPrice());
+            esModel.setSkuImg(sku.getSkuDefaultImg());
+            // need to remote request to check whether product is in stock
+            // hotStock,
+            // TODO: design and calculate the hotscore
+            // hotScore
+            // need to calculate the brandname and catelog name
+            BrandEntity brandEntity = brandService.getById(sku.getBrandId());
+            esModel.setBrandName(brandEntity.getName());
+            esModel.setBrandImg(brandEntity.getLogo());
+
+            CategoryEntity categoryEntity = categoryService.getById(sku.getCatalogId());
+            esModel.setCatalogName(categoryEntity.getName());
+
+            // query all attributes that can be used to query, like price, brand
+
+
+
+            return esModel;
+        }).collect(Collectors.toList());
+
+        //TODO: send all the results to es
     }
 
 //    @GlobalTransactional(rollbackFor = Exception.class)
