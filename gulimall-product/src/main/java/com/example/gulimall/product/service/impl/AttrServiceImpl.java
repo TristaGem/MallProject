@@ -226,18 +226,18 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         return attrEntityList;
     }
 
-    @Override
-    public void deleteRelation(AttrGroupRelationVo[] vos) {
-        //relationDao.delete(new QueryWrapper<>().eq("attr_id",1L).eq("attr_group_id",1L));
-
-        List<AttrAttrgroupRelationEntity> entities = Arrays.asList(vos).stream().map((item) -> {
-            AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
-            BeanUtils.copyProperties(item, relationEntity);
-            return relationEntity;
-        }).collect(Collectors.toList());
-
-        relationDao.deleteBatchRelation(entities);
-    }
+//    @Override
+//    public void deleteRelation(AttrGroupRelationVo[] vos) {
+//        //relationDao.delete(new QueryWrapper<>().eq("attr_id",1L).eq("attr_group_id",1L));
+//
+//        List<AttrAttrgroupRelationEntity> entities = Arrays.asList(vos).stream().map((item) -> {
+//            AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
+//            BeanUtils.copyProperties(item, relationEntity);
+//            return relationEntity;
+//        }).collect(Collectors.toList());
+//
+//        relationDao.deleteBatchRelation(entities);
+//    }
 
     /**
      * 获取当前分组没有被关联的所有属性
@@ -295,12 +295,12 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         return pageUtils;
     }
 
-    @Override
-    public List<Long> selectSearchAttrs(List<Long> attrIds) {
-
-        List<Long> searchAttrIds = this.baseMapper.selectSearchAttrIds(attrIds);
-
-        return searchAttrIds;
-    }
+//    @Override
+//    public List<Long> selectSearchAttrs(List<Long> attrIds) {
+//
+//        List<Long> searchAttrIds = this.baseMapper.selectSearchAttrIds(attrIds);
+//
+//        return searchAttrIds;
+//    }
 
 }
