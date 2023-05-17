@@ -217,14 +217,10 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(page);
     }
 
-    @Override
-    public void up(Long spuId) {
-
-        List<SkuEsModel> upProducts = new ArrayList<>();
-
+    public List<SkuEsModel.Attrs> findSearchableBaseAttrs(Long spuId) {
         // find all the attributes that are searchable
-        List<ProductAttrValueEntity> productAttrValueEntities  = productAttrValueService.baseAttrListforspu(spuId);
-        List<Long> attrIds = productAttrValueEntities.stream().map(product -> {
+        List<ProductAttrValueEntity> baseAttrs  = productAttrValueService.baseAttrListforspu(spuId);
+        List<Long> attrIds = baseAttrs.stream().map(product -> {
             return product.getAttrId();
         }).collect(Collectors.toList());
 
@@ -265,13 +261,23 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         //转换为Set集合
         Set<Long> idSet = searchAttrIds.stream().collect(Collectors.toSet());
 
-        List<SkuEsModel.Attrs> attrsList = attrIds.stream().filter(id -> {
-            return idSet.contains(id);
+        List<SkuEsModel.Attrs> attrsList = baseAttrs.stream().filter(item -> {
+            return idSet.contains(item.getAttrId());
         }).map(item -> {
             SkuEsModel.Attrs attrs = new SkuEsModel.Attrs();
             BeanUtils.copyProperties(item, attrs);
             return attrs;
         }).collect(Collectors.toList());
+
+        return attrsList;
+    }
+
+    @Override
+    public void up(Long spuId) {
+
+        List<SkuEsModel> upProducts = new ArrayList<>();
+
+        List<SkuEsModel.Attrs> attrList = findSearchableBaseAttrs(spuId);
 
         //1、查出当前spuId对应的所有sku信息,品牌的名字
         List<SkuInfoEntity> skuInfoEntities = skuInfoService.getSkusBySpuId(spuId);
@@ -284,7 +290,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             esModel.setSkuPrice(sku.getPrice());
             esModel.setSkuImg(sku.getSkuDefaultImg());
             // need to remote request to check whether product is in stock
-            // hotStock,
+            // hotStock
+            esModel.setHasStock(false);
             // TODO: design and calculate the hotscore
             // hotScore
             // need to calculate the brandname and catelog name
