@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.gulimall.product.service.AttrAttrgroupRelationService;
+import com.example.gulimall.product.service.AttrService;
 import com.example.gulimall.product.service.CategoryService;
+import com.example.gulimall.product.vo.Attr;
 import com.example.gulimall.product.vo.AttrGroupRelationVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,9 @@ import javax.management.relation.RelationService;
 @RestController
 @RequestMapping("product/attrgroup")
 public class AttrGroupController {
+
+    @Autowired
+    private AttrService attrService;
     @Autowired
     private AttrGroupService attrGroupService;
 
@@ -104,6 +109,14 @@ public class AttrGroupController {
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] attrGroupIds){
 		attrGroupService.removeByIds(Arrays.asList(attrGroupIds));
+
+        return R.ok();
+    }
+
+    @PostMapping(value = "/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupRelationVo[] vos) {
+
+        attrService.deleteRelation(vos);
 
         return R.ok();
     }

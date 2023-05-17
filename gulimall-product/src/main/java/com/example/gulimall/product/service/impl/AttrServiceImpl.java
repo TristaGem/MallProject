@@ -175,7 +175,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     public void updateAttrById(AttrVo attr) {
 
         AttrEntity attrEntity = new AttrEntity();
-        BeanUtils.copyProperties(attr,attrEntity);
+        BeanUtils.copyProperties(attr, attrEntity);
 
         this.updateById(attrEntity);
 
@@ -204,7 +204,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
      * @return
      */
     @Override
-    public List<AttrEntity> getRelationAttr(Long attrgroupId) {
+    public List<AttrEntity> getRelationAttrByAttrGroupId(Long attrgroupId) {
 
         List<AttrAttrgroupRelationEntity> entities = relationDao.selectList
                 (new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id", attrgroupId));
@@ -226,18 +226,18 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         return attrEntityList;
     }
 
-//    @Override
-//    public void deleteRelation(AttrGroupRelationVo[] vos) {
-//        //relationDao.delete(new QueryWrapper<>().eq("attr_id",1L).eq("attr_group_id",1L));
-//
-//        List<AttrAttrgroupRelationEntity> entities = Arrays.asList(vos).stream().map((item) -> {
-//            AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
-//            BeanUtils.copyProperties(item, relationEntity);
-//            return relationEntity;
-//        }).collect(Collectors.toList());
-//
-//        relationDao.deleteBatchRelation(entities);
-//    }
+    @Override
+    public void deleteRelation(AttrGroupRelationVo[] vos) {
+        //relationDao.delete(new QueryWrapper<>().eq("attr_id",1L).eq("attr_group_id",1L));
+
+        List<AttrAttrgroupRelationEntity> entities = Arrays.asList(vos).stream().map((item) -> {
+            AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
+            BeanUtils.copyProperties(item, relationEntity);
+            return relationEntity;
+        }).collect(Collectors.toList());
+
+        relationDao.deleteBatchRelation(entities);
+    }
 
     /**
      * 获取当前分组没有被关联的所有属性

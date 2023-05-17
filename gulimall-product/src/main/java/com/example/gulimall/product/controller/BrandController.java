@@ -6,6 +6,8 @@ import java.util.Map;
 
 import com.example.common.valid.AddGroup;
 import com.example.common.valid.UpdateGroup;
+import com.example.gulimall.product.entity.CategoryBrandRelationEntity;
+import com.example.gulimall.product.service.CategoryBrandRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -35,7 +37,6 @@ import javax.validation.Valid;
 public class BrandController {
     @Autowired
     private BrandService brandService;
-
     /**
      * 列表
      */
@@ -90,7 +91,8 @@ public class BrandController {
      */
     @RequestMapping("/update")
     public R update(@Validated(UpdateGroup.class) @RequestBody BrandEntity brand){
-		brandService.updateById(brand);
+
+        brandService.updateDetail(brand);
 
         return R.ok();
     }

@@ -35,7 +35,7 @@ public class CategoryBrandRelationController {
     @GetMapping("/catelog/list")
     public R getCatelog(@RequestParam("brandId") Long brandId){
         List<CategoryBrandRelationEntity> data = categoryBrandRelationService.list(
-                new QueryWrapper<CategoryBrandRelationEntity>().eq("brandId", brandId));
+                new QueryWrapper<CategoryBrandRelationEntity>().eq("brand_id", brandId));
 
         return R.ok().put("data", data);
     }
@@ -66,7 +66,7 @@ public class CategoryBrandRelationController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
-		categoryBrandRelationService.save(categoryBrandRelation);
+		categoryBrandRelationService.saveDetail(categoryBrandRelation);
 
         return R.ok();
     }
