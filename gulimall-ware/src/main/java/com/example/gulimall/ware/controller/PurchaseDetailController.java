@@ -30,6 +30,11 @@ public class PurchaseDetailController {
     @Autowired
     private PurchaseDetailService purchaseDetailService;
 
+    @RequestMapping("/test/{id}")
+    public R listPurchaseDetails(@PathVariable("id") Long id) {
+        return R.ok().put("data", purchaseDetailService.listDetailByPurchaseId(id));
+    }
+
     /**
      * 列表
      */

@@ -1,12 +1,12 @@
 server:
-  port: 10000
+  port: 10005
   servlet:
     session:
       timeout: 30m
 
 spring:
   application:
-    name: gulimall-coupon
+    name: gulimall-ware
   datasource:
     username: root
     password: root
