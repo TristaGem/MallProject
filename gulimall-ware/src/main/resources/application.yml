@@ -1,4 +1,4 @@
-server:
+ server:
   port: 10005
   servlet:
     session:
