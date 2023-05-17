@@ -41,6 +41,14 @@ public class AttrController {
     }
 
 
+    /*
+    query basic attributes
+     */
+    @RequestMapping("/{attrType}/base/list/{catelogId}")
+    public R getBasicAttributes(@PathVariable("catelogId") Long catelogId, @PathVariable("attrType") String attrType, Map<String, Object> params) {
+        return R.ok().put("page", attrService.queryBaseAttrPage(params, catelogId, attrType));
+    }
+
     /**
      * 信息
      */
