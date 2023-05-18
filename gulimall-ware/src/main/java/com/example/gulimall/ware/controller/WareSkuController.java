@@ -30,7 +30,7 @@ public class WareSkuController {
     // query whether the product is in stock
     @PostMapping("/hasStock")
     public R getSkuStockAsBool(@RequestBody List<Long> skuIds) {
-//        wareSkuService.getSkuHasStock(skuIds);
+        wareSkuService.getSkuHasStock(skuIds);
 
         return R.ok();
     }

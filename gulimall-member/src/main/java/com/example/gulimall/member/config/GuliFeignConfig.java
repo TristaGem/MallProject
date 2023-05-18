@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 @Configuration
 public class GuliFeignConfig {
 
+    /*
     @Bean("requestInterceptor")
     public RequestInterceptor requestInterceptor() {
 
@@ -43,5 +44,7 @@ public class GuliFeignConfig {
         };
         return requestInterceptor;
     }
+
+     */
 
 }
