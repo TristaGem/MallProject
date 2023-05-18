@@ -38,6 +38,7 @@ feign:
     #关闭thymeleaf缓存
   thymeleaf:
     cache: false
+    enabled: true
 
   session:
     store-type: redis

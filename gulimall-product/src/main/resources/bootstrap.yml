@@ -8,3 +8,7 @@ spring:
         server-addr: 127.0.0.1:8848
 #        namespace: 67ee5d01-6af9-4aa6-a2e8-936d5f6fa67f
 
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: false
